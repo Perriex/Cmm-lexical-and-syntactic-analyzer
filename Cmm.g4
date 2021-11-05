@@ -13,9 +13,9 @@ matchIF : IF LBRACE expression RBRACE (matchIF | scope) ELSE (matchIF | scope) ;
 
 unmatchIF: IF LBRACE expression RBRACE scope | IF LBRACE expression RBRACE matchIF ELSE unmatchIF;
 
-loop: WHILE expression scope | DO scope WHILE expression ;
+loop: WHILE expression scope | DO scope WHILE expression;
 
-declare: declare COMMA lvalue | type lvalue ;
+declare: declare COMMA lvalue | type lvalue;
 
 list: LIST HASHTAG type;
 
@@ -23,7 +23,7 @@ struct: STRUCT IDENTIFIER LSCOPE NEWLINE (declare SC? NEWLINE | setget NEWLINE)+
 
 setget: type prototype LSCOPE NEWLINE SET scope GET scope RSCOPE;
 
-scope : LSCOPE NEWLINE (scope | statement SC* | NEWLINE)* NEWLINE RSCOPE NEWLINE? | NEWLINE statement NEWLINE;
+scope : LSCOPE NEWLINE? (scope | conditional | loop)* NEWLINE RSCOPE NEWLINE? | statement NEWLINE?;
 
 expressionlist : expression
     | expressionlist COMMA expression;
@@ -52,7 +52,12 @@ expression : LBRACE expression RBRACE
     | expression OR expression
     ;
 
-statement : expression | lvalue ASSIGN expression | RETURN expression | declare;
+
+statementblocks: expression
+     | RETURN expression
+     | declare;
+
+statement : (SC | NEWLINE)+ statementblocks;
 
 argument: type IDENTIFIER | argument COMMA argument;
 
@@ -146,7 +151,7 @@ ASSIGN: '=';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9]* ;
 
-NEWLINE : '\n'+;
+NEWLINE : '\n';
 
 WHITESPACE: [ \t\r] -> skip;
 
