@@ -9,9 +9,9 @@ type: BASETYPE | fptr | list | STRUCT IDENTIFIER;
 
 conditional: matchIF | unmatchIF ;
 
-matchIF : IF expression (matchIF | scope) ELSE (matchIF | scope) ;
+matchIF : IF LBRACE expression RBRACE (matchIF | scope) ELSE (matchIF | scope) ;
 
-unmatchIF: IF expression scope | IF expression matchIF ELSE unmatchIF;
+unmatchIF: IF LBRACE expression RBRACE scope | IF LBRACE expression RBRACE matchIF ELSE unmatchIF;
 
 loop: WHILE expression scope | DO scope WHILE expression ;
 
