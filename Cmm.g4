@@ -4,7 +4,7 @@ grammar Cmm;
 
 unary: MINUS | COMPLIMENT;
 
-type: BASETYPE | fptr | list;
+type: BASETYPE | fptr | list | STRUCT IDENTIFIER ;
 
 display:/*console.log*/;
 
