@@ -17,9 +17,9 @@ matchIF : {System.out.println("Conditional : if");} IF  expression (matchIF | sc
 unmatchIF: {System.out.println("Conditional : if");} IF expression scope |
            {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} newline ELSE unmatchIF;
 
-loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do…while");} DO scope newline WHILE expression;
+loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope newline WHILE expression;
 
-declare: declare COMMA lvalue | type lvalue;
+declare: declare COMMA n=lvalue {System.out.println("VarDec : "+$n.text);} | type n=lvalue {System.out.println("VarDec : "+$n.text);};/*bug*/
 
 list: LIST HASHTAG type;
 
@@ -38,7 +38,7 @@ expressionlist : expression
 
 lvalue : IDENTIFIER
     | b=BULITIN {System.out.println("Built-in : " + $b.getText());}
-    | u=UTILITY {System.out.println($u.getText());}
+    | u=UTILITY {if($u.text == "size") System.out.println("Size"); else System.out.println("Append");}
     | lvalue ASSIGN expression
     | lvalue DOT IDENTIFIER
     | lvalue LBRACE RBRACE {System.out.println("FunctionCall");}
@@ -49,7 +49,7 @@ rvalue : INT | BOOL | lvalue;
 
 expression : LBRACE expression RBRACE
     | rvalue
-    | unary expression
+    | l=unary expression {System.out.println("Operator : "+$l.text);}
     | expression n=MULT  expression {System.out.println("Operator : "+$n.getText());}
     | expression n=ADD expression {System.out.println("Operator : "+$n.getText());}
     | expression n=MINUS  expression {System.out.println("Operator : "+$n.getText());}
@@ -74,9 +74,9 @@ prototype: LBRACE (argument|) RBRACE;
 function: type n=IDENTIFIER {System.out.println("FunctionDec : "+$n.getText());} prototype scope
           | newline fptr IDENTIFIER prototype scope;
 
-typelist: type |  type COMMA typelist;
+typelist:  type  | type  COMMA typelist;
 
-fptr : FPTR LCURLY typelist MINUS RCURLY ( type | VOID ) RCURLY;
+fptr : FPTR LCURLY typelist MINUS RCURLY  type  RCURLY;
 
 /*Tokens*/
 
