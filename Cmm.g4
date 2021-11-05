@@ -4,7 +4,7 @@ grammar Cmm;
 
 unary: MINUS | COMPLIMENT;
 
-type: BASETYPE;
+type: BASETYPE | fptr | list;
 
 display:/*console.log*/;
 
@@ -16,13 +16,9 @@ conditional: /*if else*/;
 
 loop: /*while ,do while*/;
 
-declare: declare COMMA name | type name ;
+declare: declare COMMA lvalue | type lvalue ;
 
-name : IDENTIFIER (ASSIGN expression)? ; /*sth - remember : type a=1,b,c | list # type name | fptr : <type -> type> */
-
-list:  list COMMA name | LIST HASHTAG type name ;
-
-fptr : /*sth*/ ;
+list: LIST HASHTAG type;
 
 setget: LSCOPE SET scope GET scope RSCOPE;
 
@@ -30,11 +26,11 @@ scope : LSCOPE NEWLINE statement ((SC|NEWLINE) statement)* NEWLINE RSCOPE NEWLIN
 
 comment: (LCOMMENT ~(RCOMMENT)* RCOMMENT)*; /*check*/
 
-commaExpression : expression
-    | commaExpression COMMA expression;
+expressionlist : expression
+    | expressionlist COMMA expression;
 
 methodcall: IDENTIFIER LBRACE RBRACE
-    | IDENTIFIER LBRACE commaExpression RBRACE;
+    | IDENTIFIER LBRACE expressionlist RBRACE;
 
 lvalue : IDENTIFIER | lvalue ASSIGN expression;
 rvalue : INT | BOOL | lvalue;
@@ -63,6 +59,11 @@ prototype: IDENTIFIER LBRACE (argument|) RBRACE;
 function: type prototype scope;
 action: VOID prototype scope;
 method: function | action;
+
+typelist: type | type COMMA typelist;
+
+fptr : FPTR LCURLY typelist MINUS RCURLY type RCURLY;
+
 /*Tokens*/
 
 VOID : 'void';
@@ -72,6 +73,8 @@ MAIN : 'main';
 RETURN: 'return';
 
 STRUCT: 'struct';
+
+FPTR: 'fptr';
 
 BASETYPE : 'int' | 'bool';
 
@@ -98,6 +101,10 @@ RBRACKET: ']' ;
 LBRACE: '(' ;
 
 RBRACE: ')' ;
+
+LCURLY: '<' ;
+
+RCURLY: '>' ;
 
 DOT: '.';
 
