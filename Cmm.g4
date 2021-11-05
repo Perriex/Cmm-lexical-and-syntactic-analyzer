@@ -16,9 +16,13 @@ conditional: /*if else*/;
 
 loop: /*while ,do while*/;
 
-list: list COMMA name | LIST HASHTAG type name;
+declare: declare COMMA name | type name ;
 
-fptr :  ;
+name : IDENTIFIER (ASSIGN expression)? ; /*sth - remember : type a=1,b,c | list # type name | fptr : <type -> type> */
+
+list:  list COMMA name | LIST HASHTAG type name ;
+
+fptr : /*sth*/ ;
 
 setget: LSCOPE SET scope GET scope RSCOPE;
 
@@ -50,26 +54,23 @@ call :
 
 statement : call | IDENTIFIER ASSIGN expression | RETURN expression;
 
-declare: declare COMMA name | type name ;
-
-name : IDENTIFIER (ASSIGN expression)? ; /*sth - remember : type a=1,b,c | list # type name | fptr : <type -> type> */
-
 
 /*Tokens*/
+
 
 VOID : 'void';
 
 MAIN : 'main';
-
-LIST: 'list';
-
-HASHTAG: '#';
 
 RETURN: 'return';
 
 STRUCT: 'struct';
 
 BASETYPE : 'int' | 'bool';
+
+LIST: 'list';
+
+HASHTAG: '#';
 
 INT : [0-9]+;
 
