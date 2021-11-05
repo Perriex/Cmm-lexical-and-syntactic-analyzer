@@ -23,7 +23,7 @@ struct: STRUCT IDENTIFIER LSCOPE NEWLINE (declare SC? NEWLINE | setget NEWLINE)+
 
 setget: type prototype LSCOPE NEWLINE SET scope GET scope RSCOPE;
 
-scope : LSCOPE (scope | statement SC* | NEWLINE)* RSCOPE NEWLINE?;
+scope : LSCOPE NEWLINE (scope | statement SC* | NEWLINE)* NEWLINE RSCOPE NEWLINE? | NEWLINE statement NEWLINE;
 
 expressionlist : expression
     | expressionlist COMMA expression;
