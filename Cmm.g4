@@ -1,11 +1,11 @@
 grammar Cmm;
 
 /* Grammar */
-start: struct* method* VOID MAIN LBRACE RBRACE scope EOF;
+start: struct*  method*  VOID MAIN LBRACE RBRACE scope EOF;
 
 unary: a=MINUS {System.out.println($a.getText());}  | COMPLIMENT;
 
-type: BASETYPE | fptr  | STRUCT IDENTIFIER;
+type: BASETYPE | fptr | list | STRUCT IDENTIFIER;
 
 conditional: matchIF | unmatchIF ;
 
@@ -42,8 +42,8 @@ rvalue : INT | BOOL | lvalue;
 
 expression : LBRACE expression RBRACE
     | rvalue
-    | IDENTIFIER DOT IDENTIFIER
-    | IDENTIFIER LBRACKET expression RBRACKET
+    | expression DOT IDENTIFIER
+    | expression LBRACKET expression RBRACKET
     | methodcall
     | unary expression
     | expression MULT expression
@@ -61,7 +61,7 @@ statementblocks: expression
      | RETURN expression?
      | declare;
 
-statement : (SC | NEWLINE)+ statementblocks;
+statement : (SC | NEWLINE)+ statement |  statementblocks;
 
 argument: type IDENTIFIER | argument COMMA argument;
 
