@@ -1,5 +1,6 @@
 grammar Cmm;
 
+/* Grammar */
 value: INT | BOOL | IDENTIFIER;
 
 unary: MINUS | COMPLIMENT;
