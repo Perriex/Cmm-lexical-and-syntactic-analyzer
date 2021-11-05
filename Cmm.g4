@@ -20,9 +20,7 @@ declare: declare COMMA lvalue | type lvalue ;
 
 list: LIST HASHTAG type;
 
-struct: STRUCT IDENTIFIER LSCOPE NEWLINE structBody NEWLINE RSCOPE NEWLINE;
-
-structBody: declare NEWLINE structBody | setget structBody | ;
+struct: STRUCT IDENTIFIER LSCOPE NEWLINE (declare SC? NEWLINE | setget NEWLINE)+ RSCOPE NEWLINE;
 
 setget: type prototype LSCOPE NEWLINE SET scope GET scope RSCOPE;
 
@@ -80,7 +78,7 @@ STRUCT: 'struct';
 
 FPTR: 'fptr';
 
-BASETYPE : 'int' | 'bool';
+BASETYPE : 'int' | 'bool' ;
 
 LIST: 'list';
 
