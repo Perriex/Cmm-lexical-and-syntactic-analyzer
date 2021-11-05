@@ -1,16 +1,11 @@
 grammar Cmm;
 
 /* Grammar */
+start: struct* method* VOID MAIN LBRACE RBRACE scope EOF;
 
 unary: MINUS | COMPLIMENT;
 
-type: BASETYPE | fptr | list | STRUCT IDENTIFIER ;
-
-display:/*console.log*/;
-
-size:/*size*/;
-
-append:/*add*/;
+type: BASETYPE | fptr | list | STRUCT IDENTIFIER;
 
 conditional: /*if else*/;
 
@@ -24,15 +19,15 @@ struct: STRUCT IDENTIFIER LSCOPE NEWLINE (declare SC? NEWLINE | setget NEWLINE)+
 
 setget: type prototype LSCOPE NEWLINE SET scope GET scope RSCOPE;
 
-scope : LSCOPE scope RSCOPE NEWLINE | NEWLINE statement SC? NEWLINE | NEWLINE (statement (SC | NEWLINE)+)+ NEWLINE;
-
-comment: (LCOMMENT ~(RCOMMENT)* RCOMMENT)*; /*check*/
+scope : LSCOPE (scope | statement SC* | NEWLINE)* RSCOPE NEWLINE?;
 
 expressionlist : expression
     | expressionlist COMMA expression;
 
-methodcall: IDENTIFIER LBRACE RBRACE
-    | IDENTIFIER LBRACE expressionlist RBRACE;
+methodname : IDENTIFIER | DISPLAY | SIZE | APPEND;
+
+methodcall: methodname LBRACE RBRACE
+    | methodname LBRACE expressionlist RBRACE;
 
 lvalue : IDENTIFIER | lvalue ASSIGN expression;
 rvalue : INT | BOOL | lvalue;
@@ -40,19 +35,20 @@ rvalue : INT | BOOL | lvalue;
 expression : LBRACE expression RBRACE
     | rvalue
     | IDENTIFIER DOT IDENTIFIER
-    | IDENTIFIER LBRACKET rvalue RBRACKET
+    | IDENTIFIER LBRACKET expression RBRACKET
     | methodcall
     | unary expression
     | expression MULT expression
     | expression ADD expression
     | expression MINUS expression
-    | expression COMP expression
+    | expression LCURLY expression
+    | expression RCURLY expression
     | expression EQUAL expression
     | expression AND expression
     | expression OR expression
     ;
 
-statement : expression | lvalue ASSIGN expression | RETURN expression;
+statement : expression | lvalue ASSIGN expression | RETURN expression | declare;
 
 argument: type IDENTIFIER | argument COMMA argument;
 
@@ -78,7 +74,13 @@ STRUCT: 'struct';
 
 FPTR: 'fptr';
 
-BASETYPE : 'int' | 'bool' ;
+DISPLAY: 'display';
+
+SIZE: 'size';
+
+APPEND: 'append';
+
+BASETYPE : 'int' | 'bool';
 
 LIST: 'list';
 
@@ -112,13 +114,7 @@ DOT: '.';
 
 COMMA: ',' ;
 
-NEWLINE : '\n'+;
-
 SC : ';' ;
-
-RCOMMENT: '*/' ;
-
-LCOMMENT: '/*';
 
 MINUS: '-';
 
@@ -127,8 +123,6 @@ COMPLIMENT: '~';
 MULT: ('*' | '/');
 
 ADD: '+';
-
-COMP: ('<' | '>');
 
 EQUAL: '==';
 
@@ -140,4 +134,8 @@ ASSIGN: '=';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9]* ;
 
+NEWLINE : '\n'+;
+
 WHITESPACE: [ \t\r] -> skip;
+
+COMMENT: '/*' .*? '*/' -> skip;
