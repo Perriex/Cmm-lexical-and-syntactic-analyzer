@@ -1,6 +1,6 @@
 grammar Cmm;
 
-/* Grammar */
+/* Grammr */
 
 start: struct* NEWLINE*  method* NEWLINE* MAIN {System.out.println("Main");} LBRACE RBRACE scope EOF;
 
