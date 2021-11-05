@@ -3,7 +3,7 @@ grammar Cmm;
 /* Grammar */
 start: struct* method* VOID MAIN LBRACE RBRACE scope EOF;
 
-unary: l=MINUS | COMPLIMENT {System.out.println(l.text());};
+unary: a=MINUS {System.out.println($a.getText());}  | COMPLIMENT;
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER;
 
