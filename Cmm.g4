@@ -58,7 +58,6 @@ statement : call | IDENTIFIER ASSIGN expression | RETURN expression;
 
 /*Tokens*/
 
-
 VOID : 'void';
 
 MAIN : 'main';
