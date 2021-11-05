@@ -3,7 +3,7 @@ grammar Cmm;
 /* Grammar */
 start: struct* method* VOID MAIN LBRACE RBRACE scope EOF;
 
-unary: MINUS | COMPLIMENT;
+unary: l=MINUS | COMPLIMENT {System.out.println(l.text());};
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER;
 
@@ -149,7 +149,7 @@ OR: '|';
 
 ASSIGN: '=';
 
-IDENTIFIER: [a-zA-Z_][a-zA-Z0-9]* ;
+IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]* ;
 
 NEWLINE : '\n';
 
