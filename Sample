@@ -1,27 +1,25 @@
-struct Person begin
- int age;
- int weight;
- int id;
-end
-void print_id(list# struct Person person) begin
- int i
- i = 0
- do begin
- display (person[i].id)
- i = i + 1
+struct S1 begin
+ int var1 , var2 = 3;
+ int id (int _id) begin
+ set begin
+ id = _id;
  end
- while (i < n)
+ get
+ return id
+ end
 end
-
+fptr <int -> int> f1(int arg1, bool arg1, list# list# struct S1 arg2) begin
+ fptr <void -> void> ptr1 = f1; return ptr1;
+end
+int sample()
+ if a | b * c + d / g
+ if ~(a & b)
+ return append(li, 8 * 9 / func())[1][0];
+ else
+ return -size(li) + a - n;
 main() begin
- int i, n = 10;
- list #struct Person people;
- while ~ (i == n) begin
- struct Person new_person
- new_person.id = i
- append(people, new_person)
- i = i + 1
- end
- fptr <list #struct Person -> void> pointer = print_id
- pointer(people)
+ f1()();
+ do
+ i = i + 1 - 3;
+ while i < n & i > k
 end
