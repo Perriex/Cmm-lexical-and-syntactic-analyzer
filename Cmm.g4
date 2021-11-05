@@ -24,9 +24,13 @@ list:  list COMMA name | LIST HASHTAG type name ;
 
 fptr : /*sth*/ ;
 
-setget: LSCOPE SET scope GET scope RSCOPE;
+struct: STRUCT IDENTIFIER LSCOPE NEWLINE structBody NEWLINE RSCOPE NEWLINE;
 
-scope : LSCOPE NEWLINE statement ((SC|NEWLINE) statement)* NEWLINE RSCOPE NEWLINE | NEWLINE statement NEWLINE;
+structBody: declare NEWLINE structBody | setget structBody | ;
+
+setget: type prototype LSCOPE NEWLINE SET scope GET scope RSCOPE;
+
+scope : LSCOPE scope RSCOPE NEWLINE | NEWLINE statement SC? NEWLINE | NEWLINE (statement (SC | NEWLINE)+)+ NEWLINE;
 
 comment: (LCOMMENT ~(RCOMMENT)* RCOMMENT)*; /*check*/
 
