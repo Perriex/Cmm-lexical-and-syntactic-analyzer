@@ -7,9 +7,13 @@ unary: MINUS | COMPLIMENT;
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER;
 
-conditional: /*if else*/;
+conditional: matchIF | unmatchIF ;
 
-loop: /*while ,do while*/;
+matchIF : IF expression (matchIF | scope) ELSE (matchIF | scope) ;
+
+unmatchIF: IF expression scope | IF expression matchIF ELSE unmatchIF;
+
+loop: WHILE expression scope | DO scope WHILE expression ;
 
 declare: declare COMMA lvalue | type lvalue ;
 
@@ -63,6 +67,14 @@ typelist: type | type COMMA typelist;
 fptr : FPTR LCURLY typelist MINUS RCURLY type RCURLY;
 
 /*Tokens*/
+
+WHILE : 'while' ;
+
+DO: 'do' ;
+
+IF : 'if' ;
+
+ELSE : 'else' ;
 
 VOID : 'void';
 
