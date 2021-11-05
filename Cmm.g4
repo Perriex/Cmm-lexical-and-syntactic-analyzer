@@ -1,11 +1,10 @@
 grammar Cmm;
 
 /* Grammar */
-value: INT | BOOL | IDENTIFIER;
 
 unary: MINUS | COMPLIMENT;
 
-type: BASETYPE ;
+type: BASETYPE;
 
 display:/*console.log*/;
 
@@ -27,15 +26,24 @@ fptr : /*sth*/ ;
 
 setget: LSCOPE SET scope GET scope RSCOPE;
 
-scope : LSCOPE NEWLINE (statement ((SC|NEWLINE) statement)*) NEWLINE RSCOPE NEWLINE | statement NEWLINE ;
+scope : LSCOPE NEWLINE statement ((SC|NEWLINE) statement)* NEWLINE RSCOPE NEWLINE | NEWLINE statement NEWLINE;
 
 comment: (LCOMMENT ~(RCOMMENT)* RCOMMENT)*; /*check*/
 
+commaExpression : expression
+    | commaExpression COMMA expression;
+
+methodcall: IDENTIFIER LBRACE RBRACE
+    | IDENTIFIER LBRACE commaExpression RBRACE;
+
+lvalue : IDENTIFIER | lvalue ASSIGN expression;
+rvalue : INT | BOOL | lvalue;
+
 expression : LBRACE expression RBRACE
-    | value
-    | IDENTIFIER.IDENTIFIER
-    | IDENTIFIER LBRACKET value RBRACKET
-    | IDENTIFIER LBRACE expression RBRACE
+    | rvalue
+    | IDENTIFIER DOT IDENTIFIER
+    | IDENTIFIER LBRACKET rvalue RBRACKET
+    | methodcall
     | unary expression
     | expression MULT expression
     | expression ADD expression
@@ -44,18 +52,17 @@ expression : LBRACE expression RBRACE
     | expression EQUAL expression
     | expression AND expression
     | expression OR expression
-    | expression COMMA expression
     ;
 
-call :
-    | expression
-    | call COMMA call
-    | IDENTIFIER LBRACE call RBRACE
-    ;
+statement : expression | lvalue ASSIGN expression | RETURN expression;
 
-statement : call | IDENTIFIER ASSIGN expression | RETURN expression;
+argument: type IDENTIFIER | argument COMMA argument;
 
+prototype: IDENTIFIER LBRACE (argument|) RBRACE;
 
+function: type prototype scope;
+action: VOID prototype scope;
+method: function | action;
 /*Tokens*/
 
 VOID : 'void';
