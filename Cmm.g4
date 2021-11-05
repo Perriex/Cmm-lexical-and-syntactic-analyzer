@@ -1,6 +1,11 @@
 grammar Cmm;
 
-/*Grammars*/
+value: INT | BOOL | IDENTIFIER;
+
+unary: MINUS | COMPLIMENT;
+
+type: BASETYPE ;
+
 display:/*console.log*/;
 
 size:/*size*/;
@@ -11,36 +16,60 @@ conditional: /*if else*/;
 
 loop: /*while ,do while*/;
 
-declare: BASETYPE (IDENTIFIER (ASSIGN INT | BOOL  )(',' IDENTIFIER)*) /*sth - remember : type a=1,b,c | list # type name | fptr : <type -> type> */;
+list: list COMMA name | LIST HASHTAG type name;
 
-list: /*sth*/ ;
-
-fptr : /*sth*/ ;
+fptr :  ;
 
 setget: LSCOPE SET scope GET scope RSCOPE;
 
 scope : LSCOPE NEWLINE (statement ((SC|NEWLINE) statement)*) NEWLINE RSCOPE NEWLINE | statement NEWLINE ;
 
-statement: /*call func | assign | list.append() | type variable | return */ ;
-
 comment: (LCOMMENT ~(RCOMMENT)* RCOMMENT)*; /*check*/
+
+expression : LBRACE expression RBRACE
+    | value
+    | IDENTIFIER.IDENTIFIER
+    | IDENTIFIER LBRACKET value RBRACKET
+    | IDENTIFIER LBRACE expression RBRACE
+    | unary expression
+    | expression MULT expression
+    | expression ADD expression
+    | expression MINUS expression
+    | expression COMP expression
+    | expression EQUAL expression
+    | expression AND expression
+    | expression OR expression
+    | expression COMMA expression
+    ;
+
+call :
+    | expression
+    | call COMMA call
+    | IDENTIFIER LBRACE call RBRACE
+    ;
+
+statement : call | IDENTIFIER ASSIGN expression | RETURN expression;
+
+declare: declare COMMA name | type name ;
+
+name : IDENTIFIER (ASSIGN expression)? ; /*sth - remember : type a=1,b,c | list # type name | fptr : <type -> type> */
+
 
 /*Tokens*/
 
-IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]* ; /* [A-Za-z_0-9]+ */
+VOID : 'void';
 
-KEYWORD:
-        'struct' | 'main' | 'list' | /*  'int' | 'bool' |*/
-        'void' | 'while' | 'do' | 'if' | 'else' |
-        'return' |/* 'get' | 'set' |  'begin' | 'end' | */
-        'display' | 'append' | 'size' |/* 'true' | 'false'| */
-        'fptr'
-       ;
-BASETYPE : 'int' | 'bool' ;
+MAIN : 'main';
 
 LIST: 'list';
 
-FPTR: 'fptr';
+HASHTAG: '#';
+
+RETURN: 'return';
+
+STRUCT: 'struct';
+
+BASETYPE : 'int' | 'bool';
 
 INT : [0-9]+;
 
@@ -66,7 +95,7 @@ DOT: '.';
 
 COMMA: ',' ;
 
-NEWLINE : '\n';
+NEWLINE : '\n'+;
 
 SC : ';' ;
 
@@ -74,12 +103,24 @@ RCOMMENT: '*/' ;
 
 LCOMMENT: '/*';
 
-OPERATORS: '+' | '-' | '*' | '/' | '-' ;
+MINUS: '-';
 
-COMPERER: '==' | '>' | '<' ;
+COMPLIMENT: '~';
 
-LOGICAL: '&' | '|' | '~';
+MULT: ('*' | '/');
+
+ADD: '+';
+
+COMP: ('<' | '>');
+
+EQUAL: '==';
+
+AND: '&';
+
+OR: '|';
 
 ASSIGN: '=';
+
+IDENTIFIER: [a-zA-Z_][a-zA-Z0-9]* ;
 
 WHITESPACE: [ \t\r] -> skip;
