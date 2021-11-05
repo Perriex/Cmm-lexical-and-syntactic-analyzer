@@ -5,7 +5,7 @@ start: struct* method* VOID MAIN LBRACE RBRACE scope EOF;
 
 unary: a=MINUS {System.out.println($a.getText());}  | COMPLIMENT;
 
-type: BASETYPE | fptr | list | STRUCT IDENTIFIER;
+type: BASETYPE | fptr  | STRUCT IDENTIFIER;
 
 conditional: matchIF | unmatchIF ;
 
@@ -15,9 +15,13 @@ unmatchIF: IF LBRACE expression RBRACE scope | IF LBRACE expression RBRACE match
 
 loop: WHILE expression scope | DO scope WHILE expression;
 
-declare: declare COMMA lvalue | type lvalue;
+delcareRvalue: list IDENTIFIER;
 
-list: LIST HASHTAG type;
+delcareLvalue: delcareLvalue COMMA lvalue | type lvalue ;
+
+declare: delcareRvalue | delcareLvalue;
+
+list: LIST HASHTAG (BASETYPE | list | STRUCT IDENTIFIER);
 
 struct: STRUCT IDENTIFIER LSCOPE NEWLINE (declare SC? NEWLINE | setget NEWLINE)+ RSCOPE NEWLINE;
 
@@ -54,7 +58,7 @@ expression : LBRACE expression RBRACE
 
 
 statementblocks: expression
-     | RETURN expression
+     | RETURN expression?
      | declare;
 
 statement : (SC | NEWLINE)+ statementblocks;
