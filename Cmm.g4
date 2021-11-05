@@ -11,7 +11,7 @@ conditional: /*if else*/;
 
 loop: /*while ,do while*/;
 
-variable: /*sth - remember : type a=1,b,c | list # type name | fptr : <type -> type> */;
+declare: BASETYPE (IDENTIFIER (ASSIGN INT | BOOL  )(',' IDENTIFIER)*) /*sth - remember : type a=1,b,c | list # type name | fptr : <type -> type> */;
 
 list: /*sth*/ ;
 
@@ -36,7 +36,11 @@ KEYWORD:
         'display' | 'append' | 'size' |/* 'true' | 'false'| */
         'fptr'
        ;
-BASETYPE : 'int' | 'bool';
+BASETYPE : 'int' | 'bool' ;
+
+LIST: 'list';
+
+FPTR: 'fptr';
 
 INT : [0-9]+;
 
