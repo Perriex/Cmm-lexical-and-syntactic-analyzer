@@ -7,9 +7,9 @@ type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
 conditional: unmatchIF | matchIF ;
 
-matchIF : simpleScope | {System.out.println("Conditional : if");} IF  expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE matchIF ;
+matchIF : simpleScope | {System.out.println("Conditional : if");} IF  expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE matchIF;
 
-unmatchIF: {System.out.println("Conditional : if");} IF expression scope |
+unmatchIF: {System.out.println("Conditional : if");} IF expression conditional |
            {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE unmatchIF;
 
 loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression;
@@ -28,7 +28,7 @@ setget: type n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());}  proto
                           {System.out.println("Setter");} SET scope NEWLINE
                           {System.out.println("Getter");} GET scope NEWLINE RSCOPE;
 
-simpleScope : LSCOPE NEWLINE ( simpleScope | loop | statement)* NEWLINE RSCOPE | NEWLINE ( loop | statement)*;
+simpleScope : LSCOPE NEWLINE ( simpleScope | matchIF | loop | statement)* NEWLINE RSCOPE | NEWLINE ( loop | statement | matchIF);
 
 scope : LSCOPE source* NEWLINE RSCOPE | source;
 
