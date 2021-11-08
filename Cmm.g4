@@ -2,81 +2,115 @@ grammar Cmm;
 
 /* Grammr */
 
-start: struct* (newline function)* newline? MAIN {System.out.println("Main");} LBRACE RBRACE scope EOF;
-
-unary: MINUS | COMPLIMENT;
+start: (NEWLINE? struct)* (NEWLINE function)* NEWLINE? MAIN {System.out.println("Main");} LBRACE RBRACE scope EOF;
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
 conditional: matchIF | unmatchIF ;
 
-newline: (WHITESPACE | NEWLINE)*NEWLINE(WHITESPACE | NEWLINE)*;
+matchIF : {System.out.println("Conditional : if");} IF  expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE matchIF | scope;
 
-matchIF : {System.out.println("Conditional : if");} IF  expression (matchIF | scope) {System.out.println("Conditional : else");} newline ELSE (matchIF | scope) ;
+unmatchIF: {System.out.println("Conditional : if");} IF expression conditional |
+           {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE unmatchIF;
 
-unmatchIF: {System.out.println("Conditional : if");} IF expression scope |
-           {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} newline ELSE unmatchIF;
+loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression;
 
-loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope newline WHILE expression;
+declare: n=IDENTIFIER (ASSIGN assignExpression)? {System.out.println("VarDec : "+$n.getText());};
 
-declare: declare COMMA n=lvalue {System.out.println("VarDec : "+$n.text);} | type n=lvalue {System.out.println("VarDec : "+$n.text);};/*bug*/
+declareList: type declare
+    | declareList COMMA declare
+    ;
 
 list: LIST HASHTAG type;
 
-struct: STRUCT n=IDENTIFIER {System.out.println("StructDec : "+$n.getText());} LSCOPE (newline (declare SC? | setget))+ newline RSCOPE;
+struct: STRUCT n=IDENTIFIER {System.out.println("StructDec : "+$n.getText());} LSCOPE (NEWLINE (declareList SC? | setget))+ NEWLINE RSCOPE;
 
-setget: type n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());}  prototype LSCOPE newline
-                          {System.out.println("Setter");} SET scope newline
-                          {System.out.println("Getter");} GET scope newline RSCOPE;
+setget: type n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());}  prototype LSCOPE NEWLINE
+                          {System.out.println("Setter");} SET scope NEWLINE
+                          {System.out.println("Getter");} GET scope NEWLINE RSCOPE;
 
-scope : LSCOPE ( scope | source )* newline RSCOPE | source;
+scope : LSCOPE source* NEWLINE RSCOPE | source;
 
-source: newline ( scope | conditional | loop | statement SC? );
+source: NEWLINE ( scope | conditional | loop | statement);
 
-expressionlist : expression
-    | expressionlist COMMA expression;
-
-lvalue : IDENTIFIER
-    | b=BULITIN {System.out.println("Built-in : " + $b.getText());}
-    | u=UTILITY {if($u.text == "size") System.out.println("Size"); else System.out.println("Append");}
-    | lvalue ASSIGN expression
-    | lvalue DOT IDENTIFIER
-    | lvalue LBRACE RBRACE {System.out.println("FunctionCall");}
-    | lvalue LBRACE expressionlist RBRACE {System.out.println("FunctionCall");}
-    | lvalue LBRACKET expression RBRACKET;
-
-rvalue : INT | BOOL | lvalue;
-
-expression : LBRACE expression RBRACE
-    | rvalue
-    | l=unary expression {System.out.println("Operator : "+$l.text);}
-    | expression n=MULT  expression {System.out.println("Operator : "+$n.getText());}
-    | expression n=ADD expression {System.out.println("Operator : "+$n.getText());}
-    | expression n=MINUS  expression {System.out.println("Operator : "+$n.getText());}
-    | expression n=LCURLY expression {System.out.println("Operator : "+$n.getText());}
-    | expression n=RCURLY  expression {System.out.println("Operator : "+$n.getText());}
-    | expression n=EQUAL  expression {System.out.println("Operator : "+$n.getText());}
-    | expression n=AND  expression {System.out.println("Operator : "+$n.getText());}
-    | expression n=OR  expression {System.out.println("Operator : "+$n.getText());}
+primaryExpression: IDENTIFIER
+    | INT
+    | BOOL
+    | n=BULITIN {System.out.println("Built-in : "+$n.getText());}
+    | SIZE {System.out.println("Size");}
+    | APPEND {System.out.println("Append");}
+    | LBRACE expression RBRACE
     ;
 
-statementblocks: expression
-     | {System.out.println("Return");} RETURN expression?
-     | declare
-     | conditional;
+functionCall: postfixExpression LBRACE RBRACE
+    | postfixExpression LBRACE expression RBRACE
+    ;
 
-statement : statement (SC | NEWLINE)+ statementblocks | statementblocks;
+postfixExpression: primaryExpression
+    | postfixExpression LBRACE RBRACE
+    | postfixExpression LBRACE expression RBRACE
+    | postfixExpression LBRACKET expression RBRACKET
+    | postfixExpression DOT IDENTIFIER
+    ;
 
-argument: type n=IDENTIFIER {System.out.println("ArgumentDec : "+$n.getText());}| argument COMMA argument;
+unaryExpression: postfixExpression
+    | n=MINUS unaryExpression {System.out.println("Operator : "+$n.getText());}
+    | n=COMPLIMENT unaryExpression {System.out.println("Operator : "+$n.getText());}
+    ;
 
-prototype: LBRACE (argument|) RBRACE;
+multExpression: unaryExpression
+    | multExpression n=MULT unaryExpression {System.out.println("Operator : "+$n.getText());}
+    ;
+
+addExpression: multExpression
+    | addExpression n=ADD multExpression {System.out.println("Operator : "+$n.getText());}
+    | addExpression n=MINUS multExpression {System.out.println("Operator : "+$n.getText());}
+    ;
+
+compExpression: addExpression
+    | compExpression n=LCURLY addExpression {System.out.println("Operator : "+$n.getText());}
+    | compExpression n=RCURLY addExpression {System.out.println("Operator : "+$n.getText());}
+    ;
+
+andExpression: compExpression
+    | andExpression n=AND compExpression {System.out.println("Operator : "+$n.getText());}
+    ;
+
+orExpression: andExpression
+    | orExpression n=OR andExpression {System.out.println("Operator : "+$n.getText());}
+    ;
+
+assignExpression : orExpression
+    | unaryExpression ASSIGN assignExpression
+    ;
+
+expression: assignExpression
+    | expression COMMA assignExpression
+    ;
+
+statementblocks: {System.out.println("Return");} RETURN expression?
+     | {System.out.println("FunctionCall");} functionCall
+     | postfixExpression ASSIGN assignExpression
+     | declareList
+     ;
+
+statement : statementblocks SC*
+    | statementblocks SC+ statement
+    ;
+
+argument: type n=IDENTIFIER {System.out.println("ArgumentDec : "+$n.getText());}
+    | argument COMMA argument
+    ;
+
+prototype: LBRACE (argument) RBRACE | LBRACE RBRACE;
 
 function: type n=IDENTIFIER {System.out.println("FunctionDec : "+$n.getText());} prototype scope
-          | newline fptr IDENTIFIER prototype scope;
+    | NEWLINE fptr IDENTIFIER prototype scope
+    ;
 
 typelist:  type  | type  COMMA typelist;
 
-fptr : FPTR LCURLY typelist MINUS RCURLY  type  RCURLY;
+fptr : FPTR LCURLY typelist MINUS RCURLY type RCURLY;
 
 /*Tokens*/
 
@@ -100,7 +134,9 @@ FPTR: 'fptr';
 
 BULITIN : 'display';
 
-UTILITY: 'size' | 'append';
+SIZE: 'size';
+
+APPEND: 'append';
 
 BASETYPE : 'int' | 'bool';
 
@@ -156,7 +192,7 @@ ASSIGN: '=';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]* ;
 
-NEWLINE : '\n';
+NEWLINE : [ \n\r\t]*'\n'[ \n\r\t]*;
 
 WHITESPACE: [ \t\r] -> skip;
 
