@@ -50,7 +50,8 @@ util: n=BULITIN  {System.out.println("Built-in : "+$n.getText());}
 utilCall: util LBRACE expression RBRACE;
 
 functionCall: utilCall
-    | {System.out.println("FunctionCall");} postfixExpression LBRACE expression? RBRACE
+    | IDENTIFIER LBRACE expression? RBRACE {System.out.println("FunctionCall");}
+    | postfixExpression DOT IDENTIFIER LBRACE expression? RBRACE {System.out.println("FunctionCall");}
     ;
 
 postfixExpression: primaryExpression
