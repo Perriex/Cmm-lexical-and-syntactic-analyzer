@@ -1,7 +1,7 @@
 grammar Cmm;
 
 /* Grammr */
-start: (NEWLINE? struct)* (NEWLINE function)* NEWLINE? MAIN {System.out.println("Main");} LBRACE RBRACE scope NEWLINE EOF?;
+start: (NEWLINE? struct)* (NEWLINE? function)* NEWLINE? MAIN {System.out.println("Main");} LBRACE RBRACE scope NEWLINE? EOF?;
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
@@ -88,7 +88,11 @@ orExpression: andExpression
     | orExpression n=OR andExpression {System.out.println("Operator : "+$n.getText());}
     ;
 
-assignExpression : orExpression
+equalExpression: orExpression
+    | orExpression n=EQUAL orExpression {System.out.println("Operator : "+$n.getText());}
+    ;
+
+assignExpression : equalExpression
     | unaryExpression ASSIGN assignExpression
     ;
 
@@ -200,7 +204,7 @@ ASSIGN: '=';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]* ;
 
-NEWLINE : [ \n\r\t]*'\n'[ \n\r\t]*;
+NEWLINE : ([ \n\r\t]|COMMENT)*'\n'([ \n\r\t]|COMMENT)*;
 
 WHITESPACE: [ \t\r] -> skip;
 
