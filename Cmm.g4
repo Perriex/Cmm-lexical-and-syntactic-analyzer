@@ -1,7 +1,7 @@
 grammar Cmm;
 
 /* Grammr */
-start: (NEWLINE? struct)* (NEWLINE function)* NEWLINE? MAIN {System.out.println("Main");} LBRACE RBRACE scope NEWLINE EOF;
+start: (NEWLINE? struct)* (NEWLINE function)* NEWLINE? MAIN {System.out.println("Main");} LBRACE RBRACE scope NEWLINE EOF?;
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
