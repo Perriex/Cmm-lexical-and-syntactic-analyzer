@@ -38,14 +38,18 @@ source: NEWLINE ( scope | conditional | loop | statement);
 primaryExpression: IDENTIFIER
     | INT
     | BOOL
-    | n=BULITIN {System.out.println("Built-in : "+$n.getText());}
-    | SIZE {System.out.println("Size");}
-    | APPEND {System.out.println("Append");}
     | LBRACE expression RBRACE
     ;
 
-functionCall: postfixExpression LBRACE RBRACE
-    | postfixExpression LBRACE expression RBRACE
+util: n=BULITIN  {System.out.println("Built-in : "+$n.getText());}
+    | SIZE {System.out.println("Size");}
+    | APPEND {System.out.println("Append");}
+    ;
+
+utilCall: util LBRACE expression RBRACE;
+
+functionCall: utilCall
+    | {System.out.println("FunctionCall");}  postfixExpression LBRACE expression? RBRACE
     ;
 
 postfixExpression: primaryExpression
@@ -53,6 +57,7 @@ postfixExpression: primaryExpression
     | postfixExpression LBRACE expression RBRACE
     | postfixExpression LBRACKET expression RBRACKET
     | postfixExpression DOT IDENTIFIER
+    | utilCall
     ;
 
 unaryExpression: postfixExpression
@@ -91,12 +96,12 @@ expression: assignExpression
     ;
 
 statementblocks: {System.out.println("Return");} RETURN expression?
-     | {System.out.println("FunctionCall");} functionCall
-     | postfixExpression ASSIGN assignExpression
-     | declareList
-     ;
+    | functionCall
+    | postfixExpression ASSIGN assignExpression
+    | declareList
+    ;
 
-statement : statementblocks SC*
+statement: statementblocks SC*
     | statementblocks SC+ statement
     ;
 
