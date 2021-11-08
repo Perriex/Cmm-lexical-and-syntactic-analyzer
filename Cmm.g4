@@ -7,11 +7,11 @@ type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
 conditional: unmatchIF | matchIF ;
 
-matchIF : simpleScope | {System.out.println("Conditional : if");} IF  expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE matchIF ;
+matchIF : simpleScope | {System.out.println("Conditional : if");} IF  expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE conditional ;
 
-unmatchIF: {System.out.println("Conditional : if");} IF expression simpleScope |
-           {System.out.println("Conditional : if");} IF expression unmatchIF |
-           {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE unmatchIF ;
+unmatchIF: {System.out.println("Conditional : if");} IF expression scope |
+           {System.out.println("Conditional : if");} IF expression conditional |
+           {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE conditional ;
 
 loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression;
 
