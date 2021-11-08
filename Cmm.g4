@@ -28,7 +28,9 @@ setget: type n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());}  proto
                           {System.out.println("Setter");} SET scope NEWLINE
                           {System.out.println("Getter");} GET scope NEWLINE RSCOPE;
 
-simpleScope : LSCOPE NEWLINE ( simpleScope | matchIF | loop | statement)* NEWLINE RSCOPE | NEWLINE ( loop | statement | matchIF);
+simpleScope : LSCOPE simpleSource* NEWLINE RSCOPE | simpleSource;
+
+simpleSource: NEWLINE ( simpleScope | matchIF | loop | statement);
 
 scope : LSCOPE source* NEWLINE RSCOPE | source;
 
@@ -48,12 +50,11 @@ util: n=BULITIN  {System.out.println("Built-in : "+$n.getText());}
 utilCall: util LBRACE expression RBRACE;
 
 functionCall: utilCall
-    | {System.out.println("FunctionCall");}  postfixExpression LBRACE expression? RBRACE
+    | {System.out.println("FunctionCall");} postfixExpression LBRACE expression? RBRACE
     ;
 
 postfixExpression: primaryExpression
-    | postfixExpression LBRACE RBRACE
-    | postfixExpression LBRACE expression RBRACE
+    | postfixExpression LBRACE expression? RBRACE
     | postfixExpression LBRACKET expression RBRACKET
     | postfixExpression DOT IDENTIFIER
     | utilCall
