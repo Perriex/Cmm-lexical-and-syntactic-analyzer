@@ -1,7 +1,7 @@
 grammar Cmm;
 
 /* Grammr */
-start: (NEWLINE? struct)* (NEWLINE? function)* NEWLINE? MAIN {System.out.println("Main");} LBRACE RBRACE scope NEWLINE? EOF?;
+start: (NEWLINE? struct NEWLINE)*  (NEWLINE? function NEWLINE)* NEWLINE? MAIN {System.out.println("Main");} LBRACE RBRACE scope NEWLINE? EOF?;
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
@@ -40,6 +40,7 @@ primaryExpression: IDENTIFIER
     | INT
     | BOOL
     | LBRACE expression RBRACE
+    | utilCall
     ;
 
 util: n=BULITIN  {System.out.println("Built-in : "+$n.getText());}
@@ -49,16 +50,15 @@ util: n=BULITIN  {System.out.println("Built-in : "+$n.getText());}
 
 utilCall: util LBRACE expression RBRACE;
 
-functionCall: utilCall
-    | IDENTIFIER (LBRACE expression? RBRACE)+ {System.out.println("FunctionCall");}
-    | postfixExpression DOT IDENTIFIER (LBRACE expression? RBRACE)+ {System.out.println("FunctionCall");}
+accessExpression: DOT IDENTIFIER (callExpression? accessExpression | )
+    | LBRACKET expression RBRACKET (callExpression? accessExpression | )
     ;
 
+callExpression: LBRACE expression? RBRACE (accessExpression? callExpression | );
+
 postfixExpression: primaryExpression
-    | postfixExpression LBRACE expression? RBRACE
-    | postfixExpression LBRACKET expression RBRACKET
-    | postfixExpression DOT IDENTIFIER
-    | utilCall
+    | primaryExpression accessExpression
+    | primaryExpression callExpression
     ;
 
 unaryExpression: postfixExpression
@@ -100,10 +100,19 @@ expression: assignExpression
     | expression COMMA assignExpression
     ;
 
+assignStatement: primaryExpression accessExpression ASSIGN assignExpression
+    | primaryExpression ASSIGN assignExpression
+    ;
+
+functionStatement: primaryExpression callExpression
+    | primaryExpression accessExpression callExpression
+    ;
+
 statementblocks: {System.out.println("Return");} RETURN expression?
-    | functionCall
-    | postfixExpression ASSIGN assignExpression
+    | functionStatement {System.out.println("FunctionCall");}
+    | assignStatement
     | declareList
+    | utilCall
     ;
 
 statement: statementblocks SC*
