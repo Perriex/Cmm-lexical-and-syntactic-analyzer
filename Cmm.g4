@@ -5,11 +5,11 @@ start: (NEWLINE? struct NEWLINE)*  (NEWLINE? function NEWLINE)* NEWLINE? MAIN {S
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
-conditional: NEWLINE (unmatchIF | matchIF);
+conditional: unmatchIF | matchIF;
 
-matchIF : simpleScope | {System.out.println("Conditional : if");} IF  expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE matchIF;
+matchIF : {System.out.println("Conditional : if");} IF expression simpleScope {System.out.println("Conditional : else");} NEWLINE ELSE simpleScope;
 
-unmatchIF: {System.out.println("Conditional : if");} IF expression conditional |
+unmatchIF: {System.out.println("Conditional : if");} IF expression NEWLINE?  conditional |
            {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE unmatchIF;
 
 loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression;
@@ -30,11 +30,11 @@ setget: type n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());}  proto
 
 simpleScope : LSCOPE simpleSource* NEWLINE RSCOPE | simpleSource;
 
-simpleSource: NEWLINE ( simpleScope | matchIF | loop | statement);
+simpleSource: NEWLINE ( simpleScope | loop | statement);
 
 scope : LSCOPE source* NEWLINE RSCOPE | source;
 
-source: NEWLINE ( scope | loop | statement) | conditional;
+source: NEWLINE ( scope | loop | statement | conditional);
 
 primaryExpression: IDENTIFIER
     | INT
