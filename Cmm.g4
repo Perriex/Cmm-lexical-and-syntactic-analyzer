@@ -60,6 +60,7 @@ postfixExpression: primaryExpression
     | primaryExpression (callExpression accessExpression)* callExpression
     | primaryExpression (accessExpression callExpression)* accessExpression
     | primaryExpression (accessExpression callExpression)+
+    | primaryExpression (callExpression accessExpression)+
     ;
 
 unaryExpression: postfixExpression
