@@ -9,7 +9,7 @@ conditional: unmatchIF | matchIF;
 
 matchIF : {System.out.println("Conditional : if");} IF expression simpleScope {System.out.println("Conditional : else");} NEWLINE ELSE simpleScope;
 
-unmatchIF: {System.out.println("Conditional : if");} IF expression NEWLINE? conditional |
+unmatchIF: {System.out.println("Conditional : if");} IF expression NEWLINE? (conditional | simpleScope) |
            {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE unmatchIF;
 
 loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression;
