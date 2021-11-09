@@ -107,7 +107,7 @@ assignStatement: primaryExpression accessExpression ASSIGN assignExpression
     ;
 
 functionStatement: primaryExpression (callExpression accessExpression)* callExpression
-    | primaryExpression (accessExpression callExpression)*
+    | primaryExpression (accessExpression callExpression)+
     ;
 
 statementblocks: {System.out.println("Return");} RETURN expression?
