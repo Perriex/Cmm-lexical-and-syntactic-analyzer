@@ -50,15 +50,16 @@ util: n=BULITIN  {System.out.println("Built-in : "+$n.getText());}
 
 utilCall: util LBRACE expression RBRACE;
 
-accessExpression: DOT IDENTIFIER (callExpression? accessExpression | )
-    | LBRACKET expression RBRACKET (callExpression? accessExpression | )
+accessExpression: DOT IDENTIFIER accessExpression?
+    | LBRACKET expression RBRACKET accessExpression?
     ;
 
-callExpression: LBRACE expression? RBRACE (accessExpression? callExpression | );
+callExpression: LBRACE expression? RBRACE callExpression?;
 
 postfixExpression: primaryExpression
-    | primaryExpression accessExpression
-    | primaryExpression callExpression
+    | primaryExpression (callExpression accessExpression)* callExpression
+    | primaryExpression (accessExpression callExpression)* accessExpression
+    | primaryExpression (accessExpression callExpression)+
     ;
 
 unaryExpression: postfixExpression
@@ -104,8 +105,8 @@ assignStatement: primaryExpression accessExpression ASSIGN assignExpression
     | primaryExpression ASSIGN assignExpression
     ;
 
-functionStatement: primaryExpression callExpression
-    | primaryExpression accessExpression callExpression
+functionStatement: primaryExpression (callExpression accessExpression)* callExpression
+    | primaryExpression (accessExpression callExpression)*
     ;
 
 statementblocks: {System.out.println("Return");} RETURN expression?
