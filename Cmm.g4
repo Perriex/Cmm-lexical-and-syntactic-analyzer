@@ -5,7 +5,7 @@ start: (NEWLINE? struct NEWLINE)*  (NEWLINE? function NEWLINE)* NEWLINE? MAIN {S
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
-conditional: unmatchIF | matchIF ;
+conditional: NEWLINE (unmatchIF | matchIF);
 
 matchIF : simpleScope | {System.out.println("Conditional : if");} IF  expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE matchIF;
 
@@ -34,7 +34,7 @@ simpleSource: NEWLINE ( simpleScope | matchIF | loop | statement);
 
 scope : LSCOPE source* NEWLINE RSCOPE | source;
 
-source: NEWLINE ( scope | conditional | loop | statement);
+source: NEWLINE ( scope | loop | statement) | conditional;
 
 primaryExpression: IDENTIFIER
     | INT
