@@ -22,7 +22,7 @@ declareList: type declare
 
 list: LIST HASHTAG type;
 
-struct: STRUCT n=IDENTIFIER {System.out.println("StructDec : "+$n.getText());} LSCOPE (NEWLINE (declareList SC? | setget))+ NEWLINE RSCOPE;
+struct: STRUCT n=IDENTIFIER {System.out.println("StructDec : "+$n.getText());} LSCOPE (NEWLINE? declareList SC? | NEWLINE setget)+ NEWLINE RSCOPE;
 
 setget: type n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());}  prototype LSCOPE NEWLINE
                           {System.out.println("Setter");} SET scope NEWLINE
