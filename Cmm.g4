@@ -5,11 +5,13 @@ start: (NEWLINE? struct NEWLINE)*  (NEWLINE? function NEWLINE)* NEWLINE? MAIN {S
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
-conditional: unmatchIF | matchIF;
+conditional: unmatchIF | matchIF | oneIf;
+
+oneIf : {System.out.println("Conditional : if");} IF expression NEWLINE? simpleScope ;
 
 matchIF : {System.out.println("Conditional : if");} IF expression simpleScope {System.out.println("Conditional : else");} NEWLINE ELSE simpleScope;
 
-unmatchIF: {System.out.println("Conditional : if");} IF expression NEWLINE? (conditional | simpleScope) |
+unmatchIF: {System.out.println("Conditional : if");} IF expression NEWLINE? conditional |
            {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE unmatchIF;
 
 loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression;
@@ -22,7 +24,7 @@ declareList: type declare
 
 list: LIST HASHTAG type;
 
-struct: STRUCT n=IDENTIFIER {System.out.println("StructDec : "+$n.getText());} LSCOPE (NEWLINE? declareList SC? | NEWLINE setget)+ NEWLINE RSCOPE;
+struct: STRUCT n=IDENTIFIER {System.out.println("StructDec : "+$n.getText());} LSCOPE (NEWLINE* (declareList SC? | setget))+ NEWLINE RSCOPE;
 
 setget: type n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());}  prototype LSCOPE NEWLINE
                           {System.out.println("Setter");} SET scope NEWLINE
