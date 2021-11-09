@@ -40,7 +40,6 @@ primaryExpression: IDENTIFIER
     | INT
     | BOOL
     | LBRACE expression RBRACE
-    | utilCall
     ;
 
 util: n=BULITIN  {System.out.println("Built-in : "+$n.getText());}
@@ -57,6 +56,7 @@ accessExpression: DOT IDENTIFIER accessExpression?
 callExpression: LBRACE expression? RBRACE callExpression?;
 
 postfixExpression: primaryExpression
+    | utilCall
     | primaryExpression (callExpression accessExpression)* callExpression
     | primaryExpression (accessExpression callExpression)* accessExpression
     | primaryExpression (accessExpression callExpression)+
