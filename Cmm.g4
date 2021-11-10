@@ -1,22 +1,31 @@
 grammar Cmm;
 
 /* Grammr */
-
 start: (NEWLINE? struct NEWLINE)*  (NEWLINE? function NEWLINE)* NEWLINE? MAIN {System.out.println("Main");} LBRACE RBRACE scope NEWLINE? EOF?;
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
-conditional: unmatchIF | matchIF ;
+commonSource: NEWLINE (statement | loop)
+    ;
 
-matchIF : simpleScope | {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE matchIF;
+matchSource: NEWLINE matchSource
+    | NEWLINE? IF {System.out.println("Conditional : if");} expression matchSource NEWLINE ELSE {System.out.println("Conditional : else");} matchSource
+    | commonSource
+    | LSCOPE source* NEWLINE RSCOPE
+    ;
 
-unmatchIF: {System.out.println("Conditional : if");} IF expression conditional |
-           {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE unmatchIF;
+unmatchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression (matchSource | unmatchSource)
+    | NEWLINE IF {System.out.println("Conditional : if");} expression matchSource NEWLINE ELSE {System.out.println("Conditional : else");} matchSource
+    | NEWLINE commonSource
+    | NEWLINE matchSource
+    ;
+
+conditional: matchSource | unmatchSource;
 
 loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression SC?;
 
-declare: n=IDENTIFIER (ASSIGN assignExpression)? {System.out.println("VarDec : "+$n.getText());}
-    | n=IDENTIFIER (ASSIGN assignExpression)? COMMA declare {System.out.println("VarDec : "+$n.getText());}
+declare: n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());} (ASSIGN assignExpression)?
+    | n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());} (ASSIGN assignExpression)? COMMA declare
     ;
 
 declareList: type declare
@@ -78,8 +87,7 @@ multExpression: unaryExpression
     ;
 
 addExpression: multExpression
-    | multExpression n=ADD addExpression {System.out.println("Operator : "+$n.getText());}
-    | multExpression n=MINUS addExpression {System.out.println("Operator : "+$n.getText());}
+    | multExpression n=(ADD | MINUS) addExpression {System.out.println("Operator : "+$n.getText());}
     ;
 
 compExpression: addExpression
@@ -116,7 +124,7 @@ functionStatement: primaryExpression (callExpression accessExpression)* callExpr
     ;
 
 statementblocks: {System.out.println("Return");} RETURN expression?
-    | functionStatement {System.out.println("FunctionCall");}
+    | {System.out.println("FunctionCall");} functionStatement
     | assignStatement
     | declareList
     | utilCall
@@ -127,7 +135,7 @@ statement: statementblocks SC*
     ;
 
 argument: type n=IDENTIFIER {System.out.println("ArgumentDec : "+$n.getText());}
-    | type n=IDENTIFIER COMMA argument {System.out.println("ArgumentDec : "+$n.getText());}
+    | type n=IDENTIFIER {System.out.println("ArgumentDec : "+$n.getText());} COMMA argument
     ;
 
 prototype: LBRACE (argument) RBRACE | LBRACE RBRACE;
