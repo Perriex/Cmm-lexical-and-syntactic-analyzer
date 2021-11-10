@@ -5,7 +5,7 @@ start: (NEWLINE? struct NEWLINE)*  (NEWLINE? function NEWLINE)* NEWLINE? MAIN {S
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
-commonSource: NEWLINE (statement | loop)
+commonSource: NEWLINE loop | (NEWLINE | SC) statement
     ;
 
 matchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression matchSource NEWLINE ELSE {System.out.println("Conditional : else");} matchSource
@@ -19,7 +19,7 @@ unmatchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression 
 
 conditional: matchSource | unmatchSource;
 
-loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression SC?;
+loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression;
 
 declare: n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());} (ASSIGN assignExpression)?
     | n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());} (ASSIGN assignExpression)? COMMA declare
@@ -36,13 +36,9 @@ setget: type n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());}  proto
                           {System.out.println("Setter");} SET scope NEWLINE
                           {System.out.println("Getter");} GET scope NEWLINE RSCOPE;
 
-simpleScope : LSCOPE simpleSource* NEWLINE RSCOPE | simpleSource;
-
-simpleSource: NEWLINE ( simpleScope | loop | statement);
-
 scope : LSCOPE source* NEWLINE RSCOPE | source;
 
-source: NEWLINE ( scope | loop | statement | conditional);
+source: NEWLINE ( scope | conditional) | commonSource;
 
 primaryExpression: IDENTIFIER
     | INT
@@ -221,8 +217,9 @@ ASSIGN: '=';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]* ;
 
-NEWLINE : ([ \n\r\t]|COMMENT)*'\n'([ \n\r\t]|COMMENT)*;
 
 WHITESPACE: [ \t\r] -> skip;
 
 COMMENT: '/*' .*? '*/' -> skip;
+
+NEWLINE : [ \n\r\t]*'\n'[ \n\r\t]*;
