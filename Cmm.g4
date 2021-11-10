@@ -7,18 +7,18 @@ type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
 conditional: unmatchIF | matchIF ;
 
-matchIF : {System.out.println("Conditional : if");} IF expression simpleScope {System.out.println("Conditional : else");} NEWLINE ELSE simpleScope
-        | {System.out.println("Conditional : if");} IF expression NEWLINE? simpleScope ;
+matchIF : simpleScope | {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE matchIF;
 
-unmatchIF: {System.out.println("Conditional : if");} IF expression NEWLINE? conditional |
+unmatchIF: {System.out.println("Conditional : if");} IF expression conditional |
            {System.out.println("Conditional : if");} IF expression matchIF {System.out.println("Conditional : else");} NEWLINE ELSE unmatchIF;
 
 loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression SC?;
 
-declare: n=IDENTIFIER (ASSIGN assignExpression)? {System.out.println("VarDec : "+$n.getText());};
+declare: n=IDENTIFIER (ASSIGN assignExpression)? {System.out.println("VarDec : "+$n.getText());}
+    | n=IDENTIFIER (ASSIGN assignExpression)? COMMA declare {System.out.println("VarDec : "+$n.getText());}
+    ;
 
 declareList: type declare
-    | declareList COMMA declare
     ;
 
 list: LIST HASHTAG type;
@@ -73,29 +73,29 @@ unaryExpression: postfixExpression
     ;
 
 multExpression: unaryExpression
-    | multExpression n=MULT unaryExpression {System.out.println("Operator : "+$n.getText());}
+    | unaryExpression n=MULT multExpression {System.out.println("Operator : "+$n.getText());}
     ;
 
 addExpression: multExpression
-    | addExpression n=ADD multExpression {System.out.println("Operator : "+$n.getText());}
-    | addExpression n=MINUS multExpression {System.out.println("Operator : "+$n.getText());}
+    | multExpression n=ADD addExpression {System.out.println("Operator : "+$n.getText());}
+    | multExpression n=MINUS addExpression {System.out.println("Operator : "+$n.getText());}
     ;
 
 compExpression: addExpression
-    | compExpression n=LCURLY addExpression {System.out.println("Operator : "+$n.getText());}
-    | compExpression n=RCURLY addExpression {System.out.println("Operator : "+$n.getText());}
+    | addExpression n=LCURLY compExpression {System.out.println("Operator : "+$n.getText());}
+    | addExpression n=RCURLY compExpression {System.out.println("Operator : "+$n.getText());}
     ;
 
 andExpression: compExpression
-    | andExpression n=AND compExpression {System.out.println("Operator : "+$n.getText());}
+    | compExpression n=AND andExpression {System.out.println("Operator : "+$n.getText());}
     ;
 
 orExpression: andExpression
-    | orExpression n=OR andExpression {System.out.println("Operator : "+$n.getText());}
+    | andExpression n=OR orExpression {System.out.println("Operator : "+$n.getText());}
     ;
 
 equalExpression: orExpression
-    | orExpression n=EQUAL orExpression {System.out.println("Operator : "+$n.getText());}
+    | orExpression n=EQUAL equalExpression {System.out.println("Operator : "+$n.getText());}
     ;
 
 assignExpression : equalExpression
@@ -103,7 +103,7 @@ assignExpression : equalExpression
     ;
 
 expression: assignExpression
-    | expression COMMA assignExpression
+    | assignExpression COMMA expression
     ;
 
 assignStatement: primaryExpression accessExpression ASSIGN assignExpression
@@ -126,7 +126,7 @@ statement: statementblocks SC*
     ;
 
 argument: type n=IDENTIFIER {System.out.println("ArgumentDec : "+$n.getText());}
-    | argument COMMA argument
+    | type n=IDENTIFIER COMMA argument {System.out.println("ArgumentDec : "+$n.getText());}
     ;
 
 prototype: LBRACE (argument) RBRACE | LBRACE RBRACE;
