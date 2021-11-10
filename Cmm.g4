@@ -8,8 +8,7 @@ type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 commonSource: NEWLINE (statement | loop)
     ;
 
-matchSource: NEWLINE matchSource
-    | NEWLINE? IF {System.out.println("Conditional : if");} expression matchSource NEWLINE ELSE {System.out.println("Conditional : else");} matchSource
+matchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression matchSource NEWLINE ELSE {System.out.println("Conditional : else");} matchSource
     | commonSource
     | LSCOPE source* NEWLINE RSCOPE
     ;
