@@ -20,7 +20,7 @@ unmatchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression 
 
 conditional: matchSource | unmatchSource;
 
-loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression scope;
+loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression scope?;
 
 declare: n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());} (ASSIGN assignExpression)?
     | n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());} (ASSIGN assignExpression)? COMMA declare
