@@ -81,17 +81,13 @@ unaryExpression: postfixExpression
     | n=COMPLIMENT unaryExpression {System.out.println("Operator : "+$n.getText());}
     ;
 
-multExpression: unaryExpression
-    | unaryExpression n=MULT multExpression {System.out.println("Operator : "+$n.getText());}
+multExpression: unaryExpression (n=MULT unaryExpression {System.out.println("Operator : "+$n.getText());})*
     ;
 
-addExpression: multExpression
-    | multExpression n=(ADD | MINUS) addExpression {System.out.println("Operator : "+$n.getText());}
+addExpression: multExpression (n=(ADD | MINUS) multExpression {System.out.println("Operator : "+$n.getText());})*
     ;
 
-compExpression: addExpression
-    | addExpression n=LCURLY compExpression {System.out.println("Operator : "+$n.getText());}
-    | addExpression n=RCURLY compExpression {System.out.println("Operator : "+$n.getText());}
+compExpression: addExpression (n=(LCURLY|RCURLY) addExpression {System.out.println("Operator : "+$n.getText());})*
     ;
 
 andExpression: compExpression
