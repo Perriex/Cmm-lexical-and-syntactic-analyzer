@@ -5,11 +5,12 @@ start: (NEWLINE? struct NEWLINE)*  (NEWLINE? function NEWLINE)* NEWLINE? MAIN {S
 
 type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 
-commonSource: NEWLINE loop | (NEWLINE | SC) statement
+commonSource: NEWLINE loop | NEWLINE statement
     ;
 
 matchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression matchSource NEWLINE ELSE {System.out.println("Conditional : else");} matchSource
     | commonSource
+    | SC statement
     | LSCOPE source* NEWLINE RSCOPE
     ;
 
@@ -36,7 +37,7 @@ setget: type n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());}  proto
                           {System.out.println("Setter");} SET scope NEWLINE
                           {System.out.println("Getter");} GET scope NEWLINE RSCOPE;
 
-scope : LSCOPE source* NEWLINE RSCOPE | source;
+scope : LSCOPE source* NEWLINE RSCOPE | source | SC statement;
 
 source: NEWLINE ( scope | conditional) | commonSource;
 
