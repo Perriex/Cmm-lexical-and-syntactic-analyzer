@@ -13,10 +13,8 @@ matchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression ma
     | LSCOPE source* NEWLINE RSCOPE
     ;
 
-unmatchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression (matchSource | unmatchSource)
-    | NEWLINE IF {System.out.println("Conditional : if");} expression matchSource NEWLINE ELSE {System.out.println("Conditional : else");} matchSource
-    | NEWLINE commonSource
-    | NEWLINE matchSource
+unmatchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression conditional
+    | NEWLINE IF {System.out.println("Conditional : if");} expression matchSource NEWLINE ELSE {System.out.println("Conditional : else");} unmatchSource
     ;
 
 conditional: matchSource | unmatchSource;
