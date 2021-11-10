@@ -10,7 +10,7 @@ commonSource: NEWLINE loop | NEWLINE statement
 
 matchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression matchSource NEWLINE ELSE {System.out.println("Conditional : else");} matchSource
     | commonSource
-    | SC statement
+    | SC NEWLINE? statement
     | LSCOPE source* NEWLINE RSCOPE
     ;
 
@@ -37,7 +37,7 @@ setget: type n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());}  proto
                           {System.out.println("Setter");} SET scope NEWLINE
                           {System.out.println("Getter");} GET scope NEWLINE RSCOPE;
 
-scope : LSCOPE source* NEWLINE RSCOPE | source | SC statement;
+scope : LSCOPE source* NEWLINE RSCOPE | source | SC NEWLINE? statement;
 
 source: NEWLINE ( scope | conditional) | commonSource;
 
