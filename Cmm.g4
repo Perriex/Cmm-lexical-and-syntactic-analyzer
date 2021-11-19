@@ -8,19 +8,18 @@ type: BASETYPE | fptr | list | STRUCT IDENTIFIER | VOID;
 commonSource: NEWLINE loop | NEWLINE statement
     ;
 
-matchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression matchSource NEWLINE ELSE {System.out.println("Conditional : else");} matchSource
+matchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression matchSource NEWLINE? ELSE {System.out.println("Conditional : else");} matchSource
     | commonSource
-    | SC NEWLINE? statement
     | LSCOPE source* NEWLINE RSCOPE
     ;
 
 unmatchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression conditional
-    | NEWLINE IF {System.out.println("Conditional : if");} expression matchSource NEWLINE ELSE {System.out.println("Conditional : else");} unmatchSource
+    | NEWLINE IF {System.out.println("Conditional : if");} expression matchSource NEWLINE? ELSE {System.out.println("Conditional : else");} unmatchSource
     ;
 
 conditional: matchSource | unmatchSource;
 
-loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE WHILE expression (SC statement)?;
+loop: {System.out.println("Loop : while");} WHILE expression scope | {System.out.println("Loop : do...while");} DO scope NEWLINE? WHILE expression;
 
 declare: n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());} (ASSIGN assignExpression)?
     | n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());} (ASSIGN assignExpression)? COMMA declare
@@ -37,9 +36,9 @@ setget: type n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());}  proto
                           {System.out.println("Setter");} SET scope NEWLINE
                           {System.out.println("Getter");} GET scope NEWLINE RSCOPE;
 
-scope : LSCOPE source* NEWLINE RSCOPE | source | SC NEWLINE? statement;
+scope : LSCOPE source* NEWLINE RSCOPE | source;
 
-source: NEWLINE ( scope | conditional) | commonSource;
+source: NEWLINE ( scope | conditional) | commonSource | SC NEWLINE? statement;
 
 primaryExpression: IDENTIFIER
     | INT
