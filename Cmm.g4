@@ -10,7 +10,7 @@ commonSource: NEWLINE loop | NEWLINE statement
 
 matchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression matchSource NEWLINE? ELSE {System.out.println("Conditional : else");} matchSource
     | commonSource
-    | LSCOPE source* NEWLINE RSCOPE
+    | enclosedScope
     ;
 
 unmatchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression conditional
@@ -30,15 +30,17 @@ declareList: type declare
 
 list: LIST HASHTAG type;
 
-struct: STRUCT n=IDENTIFIER {System.out.println("StructDec : "+$n.getText());} LSCOPE (NEWLINE* (declareList SC? | setget))+ NEWLINE RSCOPE;
+struct: STRUCT n=IDENTIFIER {System.out.println("StructDec : "+$n.getText());} (LSCOPE ((NEWLINE | SC)+ (declareList| setget) SC?)+ NEWLINE RSCOPE | NEWLINE (declareList SC)* (declareList| setget) SC?);
 
 setget: type n=IDENTIFIER {System.out.println("VarDec : "+$n.getText());}  prototype LSCOPE NEWLINE
                           {System.out.println("Setter");} SET scope NEWLINE
                           {System.out.println("Getter");} GET scope NEWLINE RSCOPE;
 
-scope : LSCOPE source* NEWLINE RSCOPE | source;
+enclosedScope: LSCOPE NEWLINE source SC* ((NEWLINE | SC)+ source SC*)* NEWLINE RSCOPE;
 
-source: NEWLINE ( scope | conditional) | commonSource | SC NEWLINE? statement;
+scope : enclosedScope | NEWLINE source SC*;
+
+source: conditional | loop | statement;
 
 primaryExpression: IDENTIFIER
     | INT
@@ -119,7 +121,7 @@ statementblocks: {System.out.println("Return");} RETURN expression?
     | utilCall
     ;
 
-statement: statementblocks SC*
+statement: statementblocks
     | statementblocks SC+ statement
     ;
 
