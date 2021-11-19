@@ -86,16 +86,13 @@ addExpression: multExpression (n=(ADD | MINUS) multExpression {System.out.printl
 compExpression: addExpression (n=(LCURLY|RCURLY) addExpression {System.out.println("Operator : "+$n.getText());})*
     ;
 
-andExpression: compExpression
-    | compExpression n=AND andExpression {System.out.println("Operator : "+$n.getText());}
+andExpression: compExpression (n=AND compExpression {System.out.println("Operator : "+$n.getText());})*
     ;
 
-orExpression: andExpression
-    | andExpression n=OR orExpression {System.out.println("Operator : "+$n.getText());}
+orExpression: andExpression (n=OR andExpression {System.out.println("Operator : "+$n.getText());})*
     ;
 
-equalExpression: orExpression
-    | orExpression n=EQUAL equalExpression {System.out.println("Operator : "+$n.getText());}
+equalExpression: orExpression (n=EQUAL orExpression {System.out.println("Operator : "+$n.getText());})*
     ;
 
 assignExpression : equalExpression
