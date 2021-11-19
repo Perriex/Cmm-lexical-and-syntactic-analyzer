@@ -9,7 +9,7 @@ commonSource: NEWLINE loop | NEWLINE statement
     ;
 
 matchSource: NEWLINE? IF {System.out.println("Conditional : if");} expression matchSource NEWLINE? ELSE {System.out.println("Conditional : else");} matchSource
-    | commonSource
+    | commonSource SC*
     | enclosedScope
     ;
 
