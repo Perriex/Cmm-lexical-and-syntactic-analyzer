@@ -3,7 +3,7 @@
 
 With the help of ANTLR 4 tool and Java programming language, lexical and syntactic analyzer is written for --C language.
 
-Sample code for this launguage:
+Sample code for this language:
 
 ```
 struct Person begin
